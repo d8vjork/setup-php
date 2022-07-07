@@ -19,6 +19,6 @@ add_unixodbc() {
 add_sqlsrv() {
   ext=$1
   ext_version=$(get_sqlsrv_version)
-  add_unixodbc >/dev/null 2>&1
+  add_unixodbc 
   add_pecl_extension "$ext" "$ext_version" extension
 }

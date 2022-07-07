@@ -109,7 +109,7 @@ Function Add-ToolsHelper() {
     $extensions += @('json', 'tokenizer')
   } elseif($tool -eq "phpDocumentor") {
     $extensions+=('ctype', 'hash', 'json', 'fileinfo', 'iconv', 'mbstring', 'simplexml', 'xml')
-    Add-Extension fileinfo >$null 2>&1
+    Add-Extension fileinfo 
     Copy-Item $bin_dir\phpDocumentor.bat -Destination $bin_dir\phpdoc.bat
   } elseif($tool -eq "phpunit") {
     $extensions += @('dom', 'json', 'libxml', 'mbstring', 'xml', 'xmlwriter')
@@ -122,7 +122,7 @@ Function Add-ToolsHelper() {
     Copy-Item $bin_dir\wp-cli.bat -Destination $bin_dir\wp.bat
   }
   foreach($extension in $extensions) {
-    Add-Extension $extension >$null 2>&1
+    Add-Extension $extension 
   }
 }
 
@@ -170,7 +170,7 @@ Function Add-Tool() {
     $bat_content += "php %BIN_TARGET% %*"
     Set-Content -Path $bin_dir\$tool.bat -Value $bat_content
     Add-ToolsHelper $tool
-    Add-ToProfile $current_profile $tool "New-Alias $tool $bin_dir\$tool.bat" >$null 2>&1
+    Add-ToProfile $current_profile $tool "New-Alias $tool $bin_dir\$tool.bat" 
     $tool_version = Get-ToolVersion $tool $ver_param
     Add-Log $tick $tool "Added $tool $tool_version"
   } else {
@@ -206,9 +206,9 @@ Function Add-ComposertoolHelper() {
       Remove-Item -Path $composer_lock -Force
     }
     if((composer global show $prefix$tool -a 2>&1 | findstr '^type *: *composer-plugin') -and ($composer_args -ne '')) {
-      composer global config --no-plugins allow-plugins."$prefix$tool" true >$null 2>&1
+      composer global config --no-plugins allow-plugins."$prefix$tool" true 
     }
-    composer global require $prefix$release $composer_args >$null 2>&1
+    composer global require $prefix$release $composer_args 
     return composer global show $prefix$tool 2>&1 | findstr '^versions'
   } else {
     $release_stream = [System.IO.MemoryStream]::New([System.Text.Encoding]::ASCII.GetBytes($release))
@@ -216,11 +216,11 @@ Function Add-ComposertoolHelper() {
     $scoped_dir = "$composer_bin\_tools\$tool-$scoped_dir_suffix"
     $unix_scoped_dir = $scoped_dir.replace('\', '/')
     if((composer show $prefix$tool -d $unix_scoped_dir -a 2>&1 | findstr '^type *: *composer-plugin') -and ($composer_args -ne '')) {
-      composer config -d $unix_scoped_dir --no-plugins allow-plugins."$prefix$release" true >$null 2>&1
+      composer config -d $unix_scoped_dir --no-plugins allow-plugins."$prefix$release" true 
     }
     if(-not(Test-Path $scoped_dir)) {
       New-Item -ItemType Directory -Force -Path $scoped_dir > $null 2>&1
-      composer require $prefix$release -d $unix_scoped_dir $composer_args >$null 2>&1
+      composer require $prefix$release -d $unix_scoped_dir $composer_args 
     }
     [System.Environment]::SetEnvironmentVariable(($tool.replace('-', '_') + '_bin'), "$scoped_dir\vendor\bin")
     Add-Path $scoped_dir\vendor\bin
